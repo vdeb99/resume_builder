@@ -50,9 +50,9 @@ export const Resumes: CollectionConfig = {
       name: 'experience',
       type: 'array',
       fields: [
-        { name: 'company', type: 'text', required: true },
-        { name: 'position', type: 'text', required: true },
-        { name: 'startDate', type: 'date', required: true },
+        { name: 'company', type: 'text' },
+        { name: 'position', type: 'text'},
+        { name: 'startDate', type: 'date'},
         { name: 'endDate', type: 'date' },
         { name: 'currentlyWorking', type: 'checkbox' },
         { name: 'description', type: 'textarea' },
