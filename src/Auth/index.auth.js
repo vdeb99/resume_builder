@@ -1,2 +1,2 @@
-import SignIn from "./SignIn";
-export {SignIn};
+import SignInPage from "./SignInPage";
+export {SignInPage};
