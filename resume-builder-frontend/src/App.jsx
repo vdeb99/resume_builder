@@ -1,20 +1,29 @@
-import { useUser } from '@clerk/react-router'
+import React from 'react'
+import { Outlet, Navigate } from 'react-router-dom'
+import { useUser } from '@clerk/clerk-react'
+import Header from './components/Header'
 
-import { Outlet,Navigate } from 'react-router-dom'
-import {Header,Footer} from './Components/index.components.js'
+function App() {
+  const { isSignedIn, isLoaded } = useUser()
 
-
-export default function App() {
-  const {user,isLoaded,isSignedIn}=useUser()
-  if(!isSignedIn&&isLoaded)
-  {
-    return <Navigate to={'/auth/sign-in'} />
+  if (!isLoaded) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    )
   }
+
+  if (!isSignedIn) {
+    return <Navigate to="/auth/sign-in" replace />
+  }
+
   return (
-   <>
-    <Header />
+    <div>
+      <Header />
       <Outlet />
-    <Footer />
-   </>
+    </div>
   )
 }
+
+export default App
