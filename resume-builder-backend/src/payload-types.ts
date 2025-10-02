@@ -144,7 +144,7 @@ export interface User {
  */
 export interface Resume {
   id: string;
-  user: string | User;
+  clerkUserId: string;
   title: string;
   personalInfo: {
     fullName: string;
@@ -157,9 +157,9 @@ export interface Resume {
   };
   experience?:
     | {
-        company: string;
-        position: string;
-        startDate: string;
+        company?: string | null;
+        position?: string | null;
+        startDate?: string | null;
         endDate?: string | null;
         currentlyWorking?: boolean | null;
         description?: string | null;
@@ -295,7 +295,7 @@ export interface UsersSelect<T extends boolean = true> {
  * via the `definition` "resumes_select".
  */
 export interface ResumesSelect<T extends boolean = true> {
-  user?: T;
+  clerkUserId?: T;
   title?: T;
   personalInfo?:
     | T

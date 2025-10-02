@@ -6,27 +6,18 @@ export const Resumes: CollectionConfig = {
     useAsTitle: 'title',
   },
   access: {
-    read: ({ req: { user } }) => {
-      if (user) {
-        return {
-          user: {
-            equals: user.id,
-          },
-        }
-      }
-      return false
-    },
-    create: ({ req: { user } }) => !!user,
-    update: ({ req: { user } }) => !!user,
-    delete: ({ req: { user } }) => !!user,
+    
+    read: () => true,
+    create: () => true,
+    update: () => true,
+    delete: () => true,
   },
   fields: [
     {
-      name: 'user',
-      type: 'relationship',
-      relationTo: 'users',
+      name: 'clerkUserId',
+      type: 'text',
       required: true,
-      hasMany: false,
+      index: true, 
     },
     {
       name: 'title',
