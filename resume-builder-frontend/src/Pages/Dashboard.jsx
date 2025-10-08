@@ -45,6 +45,7 @@ function Dashboard() {
     }
   }
   const handleEdit = (id) => {
+    console.log(`Navigating to edit resume with ID:${id}`)
     navigate(`/edit-resume/${id}`)
   }
 
@@ -110,8 +111,9 @@ function Dashboard() {
           </div>
           {resumes.map((resume) => (
             <div
+              onClick={()=>navigate(`/resume-preview/${resume.id}`)}
               key={resume.id}
-              className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow"
+              className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
             >
               <div className="mb-4">
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
@@ -147,13 +149,19 @@ function Dashboard() {
 
               <div className="flex gap-2">
                 <button
-                  onClick={() => handleEdit(resume.id)}
+                  onClick={(e) =>{
+                    e.stopPropagation()
+                    handleEdit(resume.id)
+                  }}
                   className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
                 >
                   Edit
                 </button>
                 <button
-                  onClick={() => handleDelete(resume.id)}
+                  onClick={(e) =>{
+                    e.stopPropagation()
+                    handleDelete(resume.id)
+                  }}
                   className="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors font-medium"
                 >
                   Delete
