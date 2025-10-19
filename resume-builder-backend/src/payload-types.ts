@@ -158,7 +158,7 @@ export interface Resume {
   experience?:
     | {
         company?: string | null;
-        position?: string | null;
+        jobTitle?: string | null;
         startDate?: string | null;
         endDate?: string | null;
         currentlyWorking?: boolean | null;
@@ -195,7 +195,7 @@ export interface Resume {
     | null;
   certifications?:
     | {
-        name: string;
+        name?: string | null;
         issuer?: string | null;
         date?: string | null;
         url?: string | null;
@@ -312,7 +312,7 @@ export interface ResumesSelect<T extends boolean = true> {
     | T
     | {
         company?: T;
-        position?: T;
+        jobTitle?: T;
         startDate?: T;
         endDate?: T;
         currentlyWorking?: T;

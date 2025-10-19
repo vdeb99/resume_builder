@@ -7,6 +7,8 @@ import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 
+import { aiEndpoints } from './app/my-route/ai'
+
 import { Users } from './collections/Users'
 
 import { Resumes } from './collections/Resumes'
@@ -24,6 +26,9 @@ export default buildConfig({
   collections: [Users,Resumes],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
+  endpoints: [
+    ...aiEndpoints, 
+  ],
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },

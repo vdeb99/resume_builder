@@ -42,7 +42,7 @@ export const Resumes: CollectionConfig = {
       type: 'array',
       fields: [
         { name: 'company', type: 'text' },
-        { name: 'position', type: 'text'},
+        { name: 'jobTitle', type: 'text'},
         { name: 'startDate', type: 'date'},
         { name: 'endDate', type: 'date' },
         { name: 'currentlyWorking', type: 'checkbox' },
@@ -92,7 +92,7 @@ export const Resumes: CollectionConfig = {
       name: 'certifications',
       type: 'array',
       fields: [
-        { name: 'name', type: 'text', required: true },
+        { name: 'name', type: 'text'},
         { name: 'issuer', type: 'text' },
         { name: 'date', type: 'date' },
         { name: 'url', type: 'text' },
