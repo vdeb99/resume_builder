@@ -46,7 +46,7 @@ export const Resumes: CollectionConfig = {
         { name: 'startDate', type: 'date'},
         { name: 'endDate', type: 'date' },
         { name: 'currentlyWorking', type: 'checkbox' },
-        { name: 'description', type: 'textarea' },
+        { name: 'description', type: 'text' },
       ],
     },
     {
@@ -65,17 +65,7 @@ export const Resumes: CollectionConfig = {
       name: 'skills',
       type: 'array',
       fields: [
-        { name: 'name', type: 'text', required: true },
-        {
-          name: 'level',
-          type: 'select',
-          options: [
-            { label: 'Beginner', value: 'beginner' },
-            { label: 'Intermediate', value: 'intermediate' },
-            { label: 'Advanced', value: 'advanced' },
-            { label: 'Expert', value: 'expert' },
-          ],
-        },
+        { name: 'name', type: 'text'},
       ],
     },
     {
