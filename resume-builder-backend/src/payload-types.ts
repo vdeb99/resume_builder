@@ -179,8 +179,7 @@ export interface Resume {
     | null;
   skills?:
     | {
-        name: string;
-        level?: ('beginner' | 'intermediate' | 'advanced' | 'expert') | null;
+        name?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -334,7 +333,6 @@ export interface ResumesSelect<T extends boolean = true> {
     | T
     | {
         name?: T;
-        level?: T;
         id?: T;
       };
   projects?:
