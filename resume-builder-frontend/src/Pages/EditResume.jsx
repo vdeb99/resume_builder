@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import GlobalApi from "../../api-services/GlobalApi";
+import AiModel from "../../api-services/AiModel";
 
 function EditResume() {
   const { resumeId } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
   const [formData, setFormData] = useState(null);
 
   useEffect(() => {
     const fetchResume = async () => {
       try {
         const data = await GlobalApi.getResume(resumeId);
-        console.log("Loaded resume:", data);
         setFormData(data);
       } catch (error) {
         console.error("Error loading resume:", error);
@@ -41,16 +42,8 @@ function EditResume() {
   const handleArrayChange = (section, index, field, value) => {
     setFormData((prev) => {
       const updated = [...prev[section]];
-      updated[index][field] = value;
+      updated[index] = { ...updated[index], [field]: value };
       return { ...prev, [section]: updated };
-    });
-  };
-
-  const handleSkillChange = (index, value) => {
-    setFormData((prev) => {
-      const updated = [...prev.skills];
-      updated[index] = value;
-      return { ...prev, skills: updated };
     });
   };
 
@@ -69,6 +62,32 @@ function EditResume() {
     });
   };
 
+  const handleAiSummary = async () => {
+    try {
+      setAiLoading(true);
+      const prompt = `Write a professional resume summary based on this user's details: ${JSON.stringify(
+        formData.personalInfo
+      )}. Keep it concise and impactful.`;
+      const aiText = await AiModel.generateText(prompt);
+      setFormData((prev) => ({
+        ...prev,
+        personalInfo: { ...prev.personalInfo, summary: aiText },
+      }));
+    } catch (error) {
+      console.error("AI Summary Error:", error);
+      alert("Failed to generate summary. Try again.");
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    const offset = date.getTimezoneOffset();
+    const adjusted = new Date(date.getTime() - offset * 60 * 1000);
+    return adjusted.toISOString().split("T")[0];
+  };
   const handleSave = async (e) => {
     e.preventDefault();
     setSaving(true);
@@ -108,6 +127,30 @@ function EditResume() {
             className="w-full border border-gray-300 rounded-lg px-4 py-2"
             required
           />
+        </div>
+
+        <div className="">
+          <h2
+            className="text-xl font-semibold mb-4"
+            onChange={(e) =>
+              setFormData({ ...formData, title: e.target.value })
+            }
+          >
+            Template
+          </h2>
+          <select
+            name="template"
+            id="template"
+            value={formData.template || "modern"}
+            onChange={(e) => {
+              setFormData({ ...formData, template: e.target.value });
+            }}
+          >
+            <option value="modern">Modern</option>
+            <option value="classic">Classic</option>
+            <option value="creative">Creative</option>
+            <option value="minimal">Minimal</option>
+          </select>
         </div>
 
         <div className="border-t pt-6">
@@ -150,9 +193,16 @@ function EditResume() {
               rows="4"
               className="border rounded px-3 py-2 w-full"
             />
+            <button
+              type="button"
+              onClick={handleAiSummary}
+              disabled={aiLoading}
+              className="mt-2 text-sm bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            >
+              {aiLoading ? "Generating..." : "Generate AI Summary"}
+            </button>
           </div>
         </div>
-
         <div className="border-t pt-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Experience</h2>
@@ -165,20 +215,21 @@ function EditResume() {
                   startDate: "",
                   endDate: "",
                   description: "",
+                  current: false,
                 })
               }
-              className="text-blue-600 text-sm"
+              className="text-blue-600 text-sm hover:underline"
             >
               + Add Experience
             </button>
           </div>
 
           {formData.experience?.map((exp, idx) => (
-            <div key={idx} className="border p-4 rounded mb-4">
+            <div key={idx} className="border p-4 rounded-lg mb-4 shadow-sm">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input
                   placeholder="Job Title"
-                  value={exp.jobTitle}
+                  value={exp.jobTitle || ""}
                   onChange={(e) =>
                     handleArrayChange(
                       "experience",
@@ -187,11 +238,12 @@ function EditResume() {
                       e.target.value
                     )
                   }
-                  className="border rounded px-3 py-2"
+                  className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
                 />
+
                 <input
                   placeholder="Company"
-                  value={exp.company}
+                  value={exp.company || ""}
                   onChange={(e) =>
                     handleArrayChange(
                       "experience",
@@ -200,11 +252,12 @@ function EditResume() {
                       e.target.value
                     )
                   }
-                  className="border rounded px-3 py-2"
+                  className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
                 />
+
                 <input
-                  placeholder="Start Date"
-                  value={exp.startDate}
+                  type="date"
+                  value={formatDate(exp.startDate) || ""}
                   onChange={(e) =>
                     handleArrayChange(
                       "experience",
@@ -213,25 +266,51 @@ function EditResume() {
                       e.target.value
                     )
                   }
-                  className="border rounded px-3 py-2"
+                  className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
                 />
-                <input
-                  placeholder="End Date"
-                  value={exp.endDate}
-                  onChange={(e) =>
-                    handleArrayChange(
-                      "experience",
-                      idx,
-                      "endDate",
-                      e.target.value
-                    )
-                  }
-                  className="border rounded px-3 py-2"
-                />
+
+                <div className="flex items-center gap-3">
+                  <input
+                    type="date"
+                    value={formatDate(exp.endDate) || ""}
+                    onChange={(e) =>
+                      handleArrayChange(
+                        "experience",
+                        idx,
+                        "endDate",
+                        e.target.value
+                      )
+                    }
+                    disabled={exp.current}
+                    className={`border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-300 ${
+                      exp.current ? "bg-gray-100 cursor-not-allowed" : ""
+                    }`}
+                  />
+
+                  <label className="flex items-center gap-2 text-sm text-gray-700">
+                    <input
+                      type="checkbox"
+                      checked={!!exp.current}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        handleArrayChange(
+                          "experience",
+                          idx,
+                          "current",
+                          checked
+                        );
+                        if (checked)
+                          handleArrayChange("experience", idx, "endDate", "");
+                      }}
+                    />
+                    Currently Working
+                  </label>
+                </div>
               </div>
+
               <textarea
                 placeholder="Description"
-                value={exp.description}
+                value={exp.description || ""}
                 onChange={(e) =>
                   handleArrayChange(
                     "experience",
@@ -240,12 +319,13 @@ function EditResume() {
                     e.target.value
                   )
                 }
-                className="border rounded px-3 py-2 w-full mt-2"
+                className="border rounded px-3 py-2 w-full mt-3 focus:outline-none focus:ring-2 focus:ring-blue-300"
               />
+
               <button
                 type="button"
                 onClick={() => removeItem("experience", idx)}
-                className="text-red-600 text-xs mt-2"
+                className="text-red-600 text-xs mt-2 hover:underline"
               >
                 Remove
               </button>
@@ -298,8 +378,8 @@ function EditResume() {
               />
               <div className="grid grid-cols-2 gap-4">
                 <input
-                  placeholder="Start Date"
-                  value={edu.startDate}
+                  type="date"
+                  value={formatDate(edu.startDate) || ""}
                   onChange={(e) =>
                     handleArrayChange(
                       "education",
@@ -308,11 +388,11 @@ function EditResume() {
                       e.target.value
                     )
                   }
-                  className="border rounded px-3 py-2"
+                  className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
                 />
                 <input
-                  placeholder="End Date"
-                  value={edu.endDate}
+                  type="date"
+                  value={formatDate(edu.endDate) || ""}
                   onChange={(e) =>
                     handleArrayChange(
                       "education",
@@ -321,7 +401,7 @@ function EditResume() {
                       e.target.value
                     )
                   }
-                  className="border rounded px-3 py-2"
+                  className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
                 />
               </div>
               <textarea
@@ -347,24 +427,32 @@ function EditResume() {
             </div>
           ))}
         </div>
-
         <div className="border-t pt-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Skills</h2>
             <button
               type="button"
-              onClick={() => addItem("skills", "")}
+              onClick={() =>
+                addItem("skills", { name: "", id: Date.now().toString() })
+              }
               className="text-blue-600 text-sm"
             >
               + Add Skill
             </button>
           </div>
           {formData.skills?.map((skill, idx) => (
-            <div key={idx} className="flex items-center gap-2 mb-2">
+            <div key={skill.id || idx} className="flex items-center gap-2 mb-2">
               <input
                 placeholder={`Skill ${idx + 1}`}
-                value={skill}
-                onChange={(e) => handleSkillChange(idx, e.target.value)}
+                value={skill.name || ""}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setFormData((prev) => {
+                    const updated = [...prev.skills];
+                    updated[idx] = { ...updated[idx], name: value };
+                    return { ...prev, skills: updated };
+                  });
+                }}
                 className="border rounded px-3 py-2 w-full"
               />
               <button
@@ -423,17 +511,10 @@ function EditResume() {
                 }
                 className="border rounded px-3 py-2 w-full"
               />
-              <button
-                type="button"
-                onClick={() => removeItem("projects", idx)}
-                className="text-red-600 text-xs mt-2"
-              >
-                Remove
-              </button>
+              <div className="flex justify-between mt-2"></div>
             </div>
           ))}
         </div>
-
         <div className="border-t pt-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Certifications</h2>
@@ -483,7 +564,7 @@ function EditResume() {
               />
               <input
                 type="date"
-                value={cert.date}
+                value={formatDate(cert.date) || ""}
                 onChange={(e) =>
                   handleArrayChange(
                     "certifications",
