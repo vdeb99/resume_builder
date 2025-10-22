@@ -6,7 +6,7 @@ import { Mail, Phone, Globe } from 'lucide-react';
 function Minimal() {
   const { resumeId: id } = useParams();
   const [loading, setLoading] = useState(true);
-  const [data, setData] = React.useState(null);
+  const [data, setData] = useState(null);
 
   useEffect(() => {
     const fetchResume = async () => {
@@ -33,11 +33,11 @@ function Minimal() {
     return adjusted.toISOString().split("T")[0];
   };
 
-  const primaryColor = data.theme?.primaryColor || '#4f46e5';
+  const primaryColor = data.primaryColor || '#4f46e5';
 
   return (
     <div className="bg-white p-6 md:p-12 max-w-3xl mx-auto my-10 font-mono text-gray-900 border border-gray-200 rounded-lg shadow-md">
-      {/* Header */}
+      
       <header className="text-center pb-4 mb-8">
         <h1 className="text-3xl font-bold uppercase tracking-widest" style={{ color: primaryColor }}>
           {data.personalInfo.fullName}
@@ -139,7 +139,7 @@ function Minimal() {
                     </a>
                   )}
                 </div>
-                <p className="text-xs italic text-gray-600">Tech Stack: {project.technologies}</p>
+                {/* <p className="text-xs italic text-gray-600">Tech Stack: {project.technologies}</p> */}
                 <p className="text-sm mt-0.5">{project.description}</p>
               </div>
             ))}

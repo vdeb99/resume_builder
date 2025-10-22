@@ -5,7 +5,7 @@ import { Mail, Phone, Globe, GraduationCap, Code, Award, Zap, Briefcase } from '
 function Modern() {
   const {resumeId:id}=useParams()
   const[loading,setLoading]=useState(true)
-  const [data,setData]=React.useState(null)
+  const [data,setData]=useState(null)
   useEffect(() => {
     const fetchResume = async () => {
       try {
@@ -31,7 +31,7 @@ function Modern() {
     const adjusted = new Date(date.getTime() - offset * 60 * 1000);
     return adjusted.toISOString().split("T")[0];
   };
-  const primaryColor = data.theme?.primaryColor || '#4f46e5';
+  const primaryColor = data.primaryColor || '#4f46e5';
 
   return (
     <div className="bg-white shadow-2xl rounded-xl p-8 max-w-4xl mx-auto my-10 font-sans text-gray-800 border-t-8" style={{ borderTopColor: primaryColor }}>

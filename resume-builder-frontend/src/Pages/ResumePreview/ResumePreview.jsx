@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import GlobalApi from "../../../api-services/GlobalApi.js";
 import { Modern, Classic, Creative, Minimal } from "./index.preview.js";
+import html2canvas from "html2canvas-pro";
+import jsPDF from "jspdf";
 
 function ResumePreview() {
   const { resumeId: id } = useParams();
@@ -11,6 +13,7 @@ function ResumePreview() {
 
   const [loading, setLoading] = useState(true);
   const [resumeDetails, setResumeDetails] = useState(null);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     const fetchResume = async () => {
@@ -29,13 +32,94 @@ function ResumePreview() {
     fetchResume();
   }, [id]);
 
-  const handleDownloadPDF = () => {
-    window.print();
+  const handleDownloadPDF = async () => {
+    try {
+      setIsDownloading(true);
+      const element = resumeRef.current;
+      await new Promise(resolve => setTimeout(resolve, 100));
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff',
+        allowTaint: true,
+        foreignObjectRendering: false,
+        imageTimeout: 0,
+        
+        ignoreElements: (element) => {
+        
+          return element.hasAttribute('data-html2canvas-ignore');
+        },
+        onclone: (clonedDoc) => {
+        
+          const allElements = clonedDoc.querySelectorAll('*');
+          allElements.forEach((el) => {
+            const styles = window.getComputedStyle(el);
+            
+            
+            ['backgroundColor', 'color', 'borderColor', 'borderTopColor', 
+             'borderBottomColor', 'borderLeftColor', 'borderRightColor'].forEach(prop => {
+              const value = styles[prop];
+              if (value && (value.includes('oklch') || value.includes('oklab') || 
+                           value.includes('lch') || value.includes('lab'))) {
+                
+                const computedColor = styles[prop];
+                try {
+                  
+                  const tempEl = clonedDoc.createElement('div');
+                  tempEl.style.color = computedColor;
+                  clonedDoc.body.appendChild(tempEl);
+                  const computed = window.getComputedStyle(tempEl).color;
+                  clonedDoc.body.removeChild(tempEl);
+                  el.style[prop] = computed;
+                } catch (e) {
+                 
+                  el.style[prop] = 'transparent';
+                }
+              }
+            });
+          });
+        }
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      
+      
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+      const imgX = (pdfWidth - imgWidth * ratio) / 2;
+      const imgY = 0;
+
+      pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+      
+      
+      const fileName = resumeDetails?.title 
+        ? `${resumeDetails.title.replace(/\s+/g, '_')}_Resume.pdf` 
+        : 'Resume.pdf';
+      
+      pdf.save(fileName);
+      
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Failed to generate PDF. Please try again.');
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   const handleEdit = () => {
     navigate(`/edit-resume/${id}`);
   };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -84,21 +168,31 @@ function ResumePreview() {
 
               <button
                 onClick={handleDownloadPDF}
-                className="w-full md:w-auto px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2 font-medium shadow-lg justify-center"
+                disabled={isDownloading}
+                className={`w-full md:w-auto px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2 font-medium shadow-lg justify-center ${isDownloading ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                Download PDF
+                {isDownloading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                    Generating PDF...
+                  </>
+                ) : (
+                  <>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Download PDF
+                  </>
+                )}
               </button>
             </div>
           </div>

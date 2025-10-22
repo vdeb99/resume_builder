@@ -1,57 +1,63 @@
-import React from 'react'
-import { useUser } from '@clerk/react-router'
-import { Link } from 'react-router-dom'
-import { UserButton } from '@clerk/clerk-react'
+import React from "react";
+import { useUser } from "@clerk/react-router";
+import { Link } from "react-router-dom";
+import { UserButton } from "@clerk/clerk-react";
+import { useNavigate } from "react-router-dom";
+import { ChevronLeftIcon } from "lucide-react";
 
 function Header() {
-  const { user, isSignedIn, isLoaded } = useUser()
+  const navigate = useNavigate();
+  const { user, isSignedIn, isLoaded } = useUser();
+  const navItems=[
+    { name: "Home", path: "/", active: true },
+    { name: "Dashboard", path: "/dashboard", active: isLoaded && isSignedIn },
+    { name: "Create Resume", path: "/create-resume", active: isSignedIn && isLoaded},
+    { name: "SignIn", path:"/auth/sign-in", active:!isSignedIn }
+  ]
+  function handleBack() {
+    navigate(-1);
+  }
   
-  return (
-    <header className='shadow-sm border-b mx-px'>
-      <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-        <div className='flex items-center justify-between h-16 ml-4'>
-          
-          <Link to='/' className='flex items-center'>
-            <img 
-              src="/logo.svg" 
-              alt="Logo" 
-              className='h-8 w-auto'
-            />
-          </Link>
+   return (
+    <header className="py-3 shadow bg-blue-800">
+      
+        <nav className="flex">
+          <div className="mr-4 flex justify-between">
+            <button
+              onClick={handleBack}
+              className="flex items-center gap-2 px-4 py-2 rounded-full  shadow-md  hover:bg-blue-700 duration-200"
+            >
+              <ChevronLeftIcon className="w-5 h-5 text-white" />
 
-          
-          {isLoaded && (
-            <nav className='flex items-center gap-6'>
-              {!isSignedIn ? (
-                <Link 
-                  to='/auth/sign-in'
-                  className='bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium'
-                >
-                  Get Started
-                </Link>
-              ) : (
-                <div className='flex items-center gap-4'>
-                  <Link 
-                    to='/dashboard'
-                    className='text-gray-700 hover:text-blue-600 transition-colors font-medium'
+            </button>
+            <Link to="/">
+              {/* <Logo width="70px" /> */}
+              Logo
+            </Link>
+          </div>
+          <ul className="flex ml-auto">
+            {navItems.map((item) =>
+              item.active ? (
+                <li key={item.name}>
+                  <button
+                    onClick={() => navigate(item.path)}
+                    className="inline-block px-6 py-2  hover:bg-blue-700  rounded-full text-white"
                   >
-                    Dashboard
-                  </Link>
-                  <Link 
-                    to='/create-resume'
-                    className='bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium'
-                  >
-                    Create Resume
-                  </Link>
-                  <UserButton afterSignOutUrl='/' />
-                </div>
-              )}
-            </nav>
-          )}
-        </div>
-      </div>
+                    {item.name}
+                  </button>
+                </li>
+              ) : null
+            )}
+            {isSignedIn && (
+              <li>
+                <UserButton afterSignOutUrl="/" />
+              </li>
+            )}
+          </ul>
+        </nav>
+      
     </header>
-  )
+   );
 }
 
-export default Header
+export default Header;

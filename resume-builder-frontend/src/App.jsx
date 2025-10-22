@@ -2,6 +2,7 @@ import React from 'react'
 import { Outlet, Navigate } from 'react-router-dom'
 import { useUser } from '@clerk/clerk-react'
 import Header from './components/Header'
+import Footer from './Components/Footer'
 
 function App() {
   const { isSignedIn, isLoaded } = useUser()
@@ -22,6 +23,7 @@ function App() {
     <div>
       <Header />
       <Outlet />
+      <Footer />
     </div>
   )
 }

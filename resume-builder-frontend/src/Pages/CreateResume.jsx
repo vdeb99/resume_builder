@@ -3,6 +3,7 @@ import { useUser } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import GlobalApi from "../../api-services/GlobalApi";
 import AiModel from "../../api-services/AiModel";
+import { HexColorPicker } from "react-colorful";
 
 function CreateResume() {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ function CreateResume() {
   const [formData, setFormData] = useState({
     title: "",
     template: "",
+    primaryColor: "#4f46e5",
     personalInfo: {
       fullName: "",
       email: "",
@@ -37,12 +39,22 @@ function CreateResume() {
         startDate: "",
         endDate: "",
         description: "",
+        grade: "",
       },
     ],
     skills: [],
     projects: [{ name: "", link: "", description: "" }],
     certifications: [{ name: "", issuer: "", date: "", link: "" }],
   });
+
+  const [showPicker, setShowPicker] = useState(false);
+  const togglePicker = () => setShowPicker(!showPicker);
+  const handleColorChange = (color) => {
+    setFormData((prev) => ({
+      ...prev,
+      primaryColor: color,
+    }));
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -117,6 +129,7 @@ function CreateResume() {
       setLoading(false);
     }
   };
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="mb-8">
@@ -147,28 +160,44 @@ function CreateResume() {
           />
         </div>
 
-        <div className="">
-          <h2
-            className="text-xl font-semibold mb-4"
-            onChange={(e) =>
-              setFormData({ ...formData, template: e.target.value })
-            }
-          >
-            Template
-          </h2>
-          <select
-            name="template"
-            id="template"
-            defaultValue="modern"
-            onChange={(e) =>
-              setFormData({ ...formData, template: e.target.value })
-            }
-          >
-            <option value="modern">Modern</option>
-            <option value="classic">Classic</option>
-            <option value="creative">Creative</option>
-            <option value="minimal">Minimal</option>
-          </select>
+        <div className="flex justify-around">
+          <div className="">
+            <h2
+              className="text-xl font-semibold mb-4"
+              onChange={(e) =>
+                setFormData({ ...formData, template: e.target.value })
+              }
+            >
+              Template
+            </h2>
+            <select
+              name="template"
+              id="template"
+              value={formData.template}
+              onChange={(e) =>
+                setFormData({ ...formData, template: e.target.value })
+              }
+            >
+              <option value="modern">Modern</option>
+              <option value="classic">Classic</option>
+              <option value="creative">Creative</option>
+              <option value="minimal">Minimal</option>
+            </select>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <h2 className="text-xl font-semibold mb-4">Select Theme</h2>
+            <div
+              onClick={togglePicker}
+              className="w-16 h-6 rounded hover:cursor-pointer border"
+              style={{ backgroundColor: formData.primaryColor }}
+            ></div>
+            {showPicker && (
+              <HexColorPicker
+                color={formData.primaryColor}
+                onChange={handleColorChange}
+              />
+            )}
+          </div>
         </div>
         <div className="border-t pt-6">
           <h2 className="text-xl font-semibold mb-4">Personal Information</h2>
@@ -359,6 +388,7 @@ function CreateResume() {
                   startDate: "",
                   endDate: "",
                   description: "",
+                  grade: "",
                 })
               }
               className="text-blue-600 text-sm"
@@ -389,7 +419,7 @@ function CreateResume() {
                 }
                 className="border rounded px-3 py-2 w-full mb-2"
               />
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4 mb-2">
                 <input
                   type="date"
                   value={edu.startDate}
@@ -417,6 +447,15 @@ function CreateResume() {
                   className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
                 />
               </div>
+              <input
+                type="text"
+                placeholder="grade"
+                value={edu.grade}
+                onChange={(e) => {
+                  handleArrayChange("education", idx, "grade", e.target.value);
+                }}
+                className="border rounded px-3 py-2 w-full mb-2"
+              />
               <button
                 type="button"
                 onClick={() => removeItem("education", idx)}
@@ -498,6 +537,7 @@ function CreateResume() {
                 }
                 className="border rounded px-3 py-2 w-full mb-2"
               />
+
               <textarea
                 placeholder="Description"
                 value={proj.description}

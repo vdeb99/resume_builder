@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, data } from "react-router-dom";
 import GlobalApi from "../../api-services/GlobalApi";
 import AiModel from "../../api-services/AiModel";
-
+import { HexColorPicker } from "react-colorful";
 function EditResume() {
   const { resumeId } = useParams();
   const navigate = useNavigate();
@@ -25,7 +25,7 @@ function EditResume() {
     };
     fetchResume();
   }, [resumeId]);
-
+  console.log("Form Data:", formData);
   const handleChange = (e) => {
     const { name, value } = e.target;
     const keys = name.split(".");
@@ -38,7 +38,14 @@ function EditResume() {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
-
+  const [showPicker, setShowPicker] = useState(false);
+  const togglePicker = () => setShowPicker(!showPicker);
+  const handleColorChange = (color) => {
+    setFormData((prev) => ({
+      ...prev,
+      primaryColor: color,
+    }));
+  };
   const handleArrayChange = (section, index, field, value) => {
     setFormData((prev) => {
       const updated = [...prev[section]];
@@ -94,7 +101,7 @@ function EditResume() {
     try {
       await GlobalApi.updateResume(resumeId, formData);
       alert("Resume updated successfully!");
-      navigate("/dashboard");
+      navigate("/resume-preview/" + resumeId);
     } catch (error) {
       console.error("Error updating resume:", error);
       alert("Failed to save resume. Please try again.");
@@ -129,28 +136,44 @@ function EditResume() {
           />
         </div>
 
-        <div className="">
-          <h2
-            className="text-xl font-semibold mb-4"
-            onChange={(e) =>
-              setFormData({ ...formData, title: e.target.value })
-            }
-          >
-            Template
-          </h2>
-          <select
-            name="template"
-            id="template"
-            value={formData.template || "modern"}
-            onChange={(e) => {
-              setFormData({ ...formData, template: e.target.value });
-            }}
-          >
-            <option value="modern">Modern</option>
-            <option value="classic">Classic</option>
-            <option value="creative">Creative</option>
-            <option value="minimal">Minimal</option>
-          </select>
+        <div className="flex justify-around">
+          <div className="">
+            <h2
+              className="text-xl font-semibold mb-4"
+              onChange={(e) =>
+                setFormData({ ...formData, template: e.target.value })
+              }
+            >
+              Template
+            </h2>
+            <select
+              name="template"
+              id="template"
+              value={formData.template}
+              onChange={(e) =>
+                setFormData({ ...formData, template: e.target.value })
+              }
+            >
+              <option value="modern">Modern</option>
+              <option value="classic">Classic</option>
+              <option value="creative">Creative</option>
+              <option value="minimal">Minimal</option>
+            </select>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <h2 className="text-xl font-semibold mb-4">Select Theme</h2>
+            <div
+              onClick={togglePicker}
+              className="w-16 h-6 rounded hover:cursor-pointer border"
+              style={{ backgroundColor: formData.primaryColor }}
+            ></div>
+            {showPicker && (
+              <HexColorPicker
+                color={formData.primaryColor}
+                onChange={handleColorChange}
+              />
+            )}
+          </div>
         </div>
 
         <div className="border-t pt-6">

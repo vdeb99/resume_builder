@@ -6,6 +6,66 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@layer base { img { display: initial; } } 
+
+.force-rgb *,
+.force-rgb *::before,
+.force-rgb *::after {
+  color: black !important;
+  background-color: white !important;
+  border-color: black !important;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  
+  .resume-print-area,
+  .resume-print-area * {
+    visibility: visible;
+  }
+  
+  .resume-print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+  
+  
+  .no-print {
+    display: none !important;
+  }
+  
+  
+  .print-wrapper {
+    background: white !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  
+  .resume-container {
+    page-break-inside: avoid;
+  }
+  
+  
+  @page {
+    margin: 0.5cm;
+  }
+}
+
+
+@media screen {
+  .resume-print-area {
+    background: white;
+  }
+}
+
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

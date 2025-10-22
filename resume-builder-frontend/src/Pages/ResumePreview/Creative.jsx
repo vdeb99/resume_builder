@@ -32,7 +32,7 @@ function Creative() {
     return adjusted.toISOString().split("T")[0];
   };
 
-  const primaryColor = data.theme.primaryColor || '#4f46e5';
+  const primaryColor = data.primaryColor || '#4f46e5';
     const bgColor = primaryColor + 'cc'; 
     return (
       <div className="bg-gray-50 shadow-xl rounded-lg p-0 max-w-5xl mx-auto my-10 font-sans text-gray-700 overflow-hidden grid md:grid-cols-3">
