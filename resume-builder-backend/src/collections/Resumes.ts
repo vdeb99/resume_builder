@@ -75,7 +75,7 @@ export const Resumes: CollectionConfig = {
         { name: 'name', type: 'text', required: true },
         { name: 'description', type: 'textarea' },
         { name: 'url', type: 'text' },
-        { name: 'technologies', type: 'text' },
+        { name: 'technologies', type: 'array' , fields: [{name:'name',type:'text'}]},
       ],
     },
     {
@@ -100,12 +100,9 @@ export const Resumes: CollectionConfig = {
       defaultValue: 'modern',
     },
     {
-      name: 'theme',
-      type: 'group',
-      fields: [
-        { name: 'primaryColor', type: 'text', defaultValue: '#3B82F6' },
-        { name: 'fontFamily', type: 'text', defaultValue: 'Inter' },
-      ],
+      name: 'primaryColor',
+      type: 'text',
+      defaultValue: '#000000',
     },
   ],
 }

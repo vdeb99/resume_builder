@@ -188,7 +188,12 @@ export interface Resume {
         name: string;
         description?: string | null;
         url?: string | null;
-        technologies?: string | null;
+        technologies?:
+          | {
+              name?: string | null;
+              id?: string | null;
+            }[]
+          | null;
         id?: string | null;
       }[]
     | null;
@@ -202,10 +207,7 @@ export interface Resume {
       }[]
     | null;
   template?: ('modern' | 'classic' | 'creative' | 'minimal') | null;
-  theme?: {
-    primaryColor?: string | null;
-    fontFamily?: string | null;
-  };
+  primaryColor?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -341,7 +343,12 @@ export interface ResumesSelect<T extends boolean = true> {
         name?: T;
         description?: T;
         url?: T;
-        technologies?: T;
+        technologies?:
+          | T
+          | {
+              name?: T;
+              id?: T;
+            };
         id?: T;
       };
   certifications?:
@@ -354,12 +361,7 @@ export interface ResumesSelect<T extends boolean = true> {
         id?: T;
       };
   template?: T;
-  theme?:
-    | T
-    | {
-        primaryColor?: T;
-        fontFamily?: T;
-      };
+  primaryColor?: T;
   updatedAt?: T;
   createdAt?: T;
 }
