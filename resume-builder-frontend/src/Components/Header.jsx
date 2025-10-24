@@ -31,8 +31,8 @@ function Header() {
 
             </button>
             <Link to="/">
-              {/* <Logo width="70px" /> */}
-              Logo
+              <img className="w-12 rounded-2xl" src="https://mir-s3-cdn-cf.behance.net/project_modules/fs/ca502d113252555.6023ff63402cc.jpg" alt="logo" />
+              
             </Link>
           </div>
           <ul className="flex ml-auto">
