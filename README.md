@@ -1,12 +1,39 @@
-# React + Vite
+Resume Builder
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern resume builder application with React and Vite. Generate resumes with real-time preview and versatile templates.
 
-Currently, two official plugins are available:
+Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+🎨 Real-time Preview - Click to preview your resume or cover letter as you write
 
-## Expanding the ESLint configuration
+📱Mobile Version When you purchase this file you will receive an responsive html page. – Works on desktop and mobile devices
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+🎯 Several Templates - Select from range of professional resume templates
+
+💾 PDF Export - Take your resume with you on mobile and offline in PDF format
+
+⚡ Blazing fast - Made with Vite for instant development
+
+🔒 Privacy First - No data leaves your browser
+
+Tech Stack
+
+React - A JavaScript library for building user interfaces that are also reusable!
+
+Vite - Next generation frontend tooling landscape Created with Sketch.
+
+ESLint - Code linting and styling of React components
+
+Getting Started
+
+Prerequisites
+
+Node.js (v14 or higher)
+
+npm or yarn
+
+Installation
+
+Clone the repository
+
+git clone https://github.com/vdeb99
